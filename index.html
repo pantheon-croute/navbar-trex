@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🦖 MÂCHOIRES — Navigation T-Rex</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Reset & tokens ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bone:      hsl(48, 22%, 80%);
+      --bone-dark: hsl(45, 18%, 62%);
+      --bone-stain:hsl(45, 12%, 52%);
+      --gum:       hsl(352, 42%, 18%);
+      --gum-light: hsl(352, 35%, 26%);
+      --throat:    hsl(350, 28%, 6%);
+      --throat2:   hsl(10, 20%, 10%);
+      --blood:     hsl(0, 55%, 30%);
+      --nav-bg:    hsl(20, 10%, 7%);
+      --text:      hsl(38, 18%, 78%);
+      --muted:     hsl(30, 8%, 42%);
+      --rust:      hsl(18, 68%, 44%);
+      --saliva:    hsl(195, 30%, 80%);
+      --jaw-h:     110px;
+      --mouth-open: 300px;
+      --mouth-closed: 185px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Oswald', system-ui, sans-serif;
+      background: hsl(20, 10%, 5%);
+      color: var(--text);
+      min-height: 250vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── Grain ──────────────────────────────────────── */
+    .grain {
+      position: fixed; inset: 0;
+      z-index: 9000; pointer-events: none; opacity: 0.04; overflow: hidden;
+    }
+    .grain::before {
+      content: '';
+      position: absolute; inset: -120px;
+      width: calc(100% + 240px); height: calc(100% + 240px);
+      background-image: url("data:image/svg+xml,<svg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='250' height='250' filter='url(%23n)' fill='white'/></svg>");
+      background-size: 180px 180px;
+      animation: grain-anim 0.35s steps(1) infinite;
+    }
+    @keyframes grain-anim {
+      0%  { transform: translate(0,0); }    12% { transform: translate(-7%,-3%); }
+      24% { transform: translate(9%,-9%); } 36% { transform: translate(-5%,13%); }
+      48% { transform: translate(11%,3%); } 60% { transform: translate(-9%,7%); }
+      72% { transform: translate(5%,-13%); }84% { transform: translate(-11%,5%); }
+      96% { transform: translate(7%,11%); }
+    }
+
+    /* ─── Vignette ───────────────────────────────────── */
+    .vignette {
+      position: fixed; inset: 0; z-index: 8995; pointer-events: none;
+      background: radial-gradient(ellipse 80% 80% at 50% 40%,
+        transparent 35%, hsl(20, 15%, 3% / 0.8) 100%);
+    }
+
+    /* ─── Header ─────────────────────────────────────── */
+    .site-header {
+      position: sticky; top: 0; z-index: 400;
+      height: 60px;
+      background: var(--nav-bg);
+      border-bottom: 1px solid hsl(22, 15%, 14%);
+      display: flex; align-items: center;
+      padding-inline: 2rem; gap: 2rem;
+      background-image:
+        radial-gradient(ellipse 200px 30px at 20% 120%, hsl(18,40%,16%/0.5), transparent),
+        radial-gradient(ellipse 150px 20px at 75% 50%, hsl(20,30%,12%/0.4), transparent);
+    }
+
+    .logo {
+      font-size: 1.05rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text); text-decoration: none;
+      display: flex; align-items: center; gap: 0.5rem; white-space: nowrap;
+    }
+    .logo-mark { color: var(--rust); }
+
+    .header-right {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 1rem;
+    }
+
+    .status-txt {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.12em;
+      color: var(--muted); text-transform: uppercase;
+    }
+    .status-txt.warn { color: var(--rust); }
+
+    /* ─── Bite button ────────────────────────────────── */
+    .bite-btn {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--bone); background: var(--gum);
+      border: 1px solid var(--blood);
+      border-radius: 3px; cursor: pointer;
+      min-height: 36px; padding-inline: 1.1rem;
+      transition: background 150ms, transform 150ms, box-shadow 150ms;
+      display: flex; align-items: center; gap: 0.5rem;
+      box-shadow: 0 0 10px hsl(0,60%,20%/0.4);
+    }
+    .bite-btn:hover {
+      background: var(--blood);
+      transform: translateY(-1px);
+      box-shadow: 0 0 18px hsl(0,60%,30%/0.6);
+    }
+    .bite-btn:focus-visible {
+      outline: 2px solid var(--rust); outline-offset: 2px;
+    }
+    .bite-btn .jaw-icon { font-size: 1.1rem; }
+
+    /* ─── Mouth wrap ─────────────────────────────────── */
+    .mouth-wrap {
+      position: sticky;
+      top: 60px;
+      z-index: 300;
+      width: 100%;
+      height: var(--mouth-open);
+      overflow: hidden;
+      background: var(--throat);
+      background-image:
+        radial-gradient(ellipse 60% 80% at 50% 50%, var(--throat2), var(--throat)),
+        radial-gradient(ellipse 30% 40% at 50% 80%, hsl(0,30%,8%/0.8), transparent);
+      transition: height 0.55s cubic-bezier(0.34, 1.2, 0.64, 1);
+    }
+
+    .mouth-wrap.is-closed {
+      height: var(--mouth-closed);
+      transition: height 0.13s cubic-bezier(0.85, 0, 1, 0.15);
+    }
+
+    /* ─── Jaw SVGs ───────────────────────────────────── */
+    .jaw-svg {
+      position: absolute;
+      left: 0; width: 100%; display: block;
+      height: var(--jaw-h);
+    }
+    .jaw-top { top: 0; }
+    .jaw-bottom { bottom: 0; }
+
+    /* saliva animation on some teeth (added via JS) */
+    .saliva-drop {
+      animation: drip 3s ease-in-out infinite;
+    }
+    @keyframes drip {
+      0%, 100% { transform: scaleY(1) translateY(0); opacity: 0.6; }
+      50%       { transform: scaleY(1.3) translateY(4px); opacity: 0.9; }
+    }
+
+    /* ─── Mouth interior ─────────────────────────────── */
+    .mouth-interior {
+      position: absolute;
+      top: var(--jaw-h); bottom: var(--jaw-h);
+      left: 0; right: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.18s ease;
+    }
+    .mouth-wrap.is-closed .mouth-interior {
+      opacity: 0; pointer-events: none;
+    }
+
+    /* ─── Nav links ──────────────────────────────────── */
+    .nav-links {
+      display: flex; align-items: center;
+      gap: 0.5rem; list-style: none;
+      flex-wrap: wrap; justify-content: center;
+      padding-inline: 2rem;
+    }
+
+    .nav-links li a,
+    .nav-links li button {
+      display: inline-flex; align-items: center;
+      min-height: 44px; padding-inline: 1.1rem;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.95rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--bone-dark); text-decoration: none;
+      background: none; border: none;
+      border-radius: 3px; cursor: pointer;
+      transition: color 150ms, background 150ms;
+    }
+    .nav-links li a:hover,
+    .nav-links li button:hover {
+      color: var(--bone);
+      background: hsl(0, 40%, 20% / 0.4);
+    }
+    .nav-links li a:focus-visible,
+    .nav-links li button:focus-visible {
+      outline: 2px solid var(--rust); outline-offset: 2px;
+    }
+
+    .nav-cta {
+      background: var(--rust) !important;
+      color: hsl(20, 10%, 7%) !important;
+      font-weight: 700 !important;
+      box-shadow: 0 2px 12px hsl(18, 68%, 44% / 0.3);
+      transition: transform 150ms, box-shadow 150ms !important;
+    }
+    .nav-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 18px hsl(18, 68%, 44% / 0.45) !important;
+    }
+
+    /* ─── Dust particles ─────────────────────────────── */
+    .dust {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9100;
+    }
+
+    /* ─── Page content ───────────────────────────────── */
+    .page-content {
+      max-width: 1100px; margin-inline: auto;
+      padding: 6rem 2rem;
+    }
+    .page-content h1 {
+      font-size: clamp(2.5rem, 6vw + 1rem, 6rem);
+      font-weight: 700; letter-spacing: -0.02em; line-height: 1.05;
+      text-transform: uppercase; color: var(--text);
+    }
+    .page-content h1 em { font-style: normal; color: var(--rust); display: block; }
+    .page-content p {
+      margin-top: 2rem; font-family: 'Share Tech Mono', monospace;
+      font-size: 0.85rem; line-height: 1.8;
+      color: var(--muted); max-width: 55ch;
+    }
+
+    /* ─── Bite flash ─────────────────────────────────── */
+    .bite-flash {
+      position: fixed; inset: 0; z-index: 9200;
+      background: hsl(0, 60%, 15%);
+      pointer-events: none; opacity: 0;
+    }
+    .bite-flash.active {
+      animation: flash-in 0.25s ease-out forwards;
+    }
+    @keyframes flash-in {
+      0%   { opacity: 0.35; }
+      100% { opacity: 0; }
+    }
+
+    /* ─── Responsive ─────────────────────────────────── */
+    @media (max-width: 700px) {
+      :root {
+        --jaw-h: 80px;
+        --mouth-open: 240px;
+        --mouth-closed: 140px;
+      }
+      .nav-links { gap: 0.25rem; }
+      .nav-links li a, .nav-links li button { font-size: 0.8rem; padding-inline: 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── Overlays ──────────────────────────────────── -->
+<div class="grain"   aria-hidden="true"></div>
+<div class="vignette"aria-hidden="true"></div>
+<div class="bite-flash" id="bite-flash" aria-hidden="true"></div>
+
+<!-- ─── Header ───────────────────────────────────── -->
+<header class="site-header">
+  <a href="#" class="logo">
+    <span class="logo-mark" aria-hidden="true">◈</span>
+    SECTEUR·N
+  </a>
+  <div class="header-right">
+    <span class="status-txt warn" id="mouth-status" aria-live="polite">GUEULE OUVERTE</span>
+    <button class="bite-btn" id="bite-btn" aria-expanded="true" aria-controls="mouth-wrap">
+      <span class="jaw-icon" aria-hidden="true">🦖</span>
+      <span id="bite-label">REFERMER</span>
+    </button>
+  </div>
+</header>
+
+<!-- ─── La gueule ────────────────────────────────── -->
+<div class="mouth-wrap" id="mouth-wrap" role="navigation" aria-label="Menu principal">
+
+  <!-- Mâchoire supérieure -->
+  <svg class="jaw-svg jaw-top" id="svg-top"
+       xmlns="http://www.w3.org/2000/svg"
+       aria-hidden="true"></svg>
+
+  <!-- Liens de navigation -->
+  <div class="mouth-interior" id="mouth-interior">
+    <ul class="nav-links" role="list">
+      <li><a href="#">Territoire</a></li>
+      <li><a href="#">Ressources</a></li>
+      <li><a href="#">Protocoles</a></li>
+      <li><a href="#">Archives</a></li>
+      <li><a href="#" class="nav-cta">Émettre ↗</a></li>
+    </ul>
+  </div>
+
+  <!-- Mâchoire inférieure -->
+  <svg class="jaw-svg jaw-bottom" id="svg-bottom"
+       xmlns="http://www.w3.org/2000/svg"
+       aria-hidden="true"></svg>
+
+</div>
+
+<!-- ─── Page ──────────────────────────────────────── -->
+<main class="page-content">
+  <h1>BEAUCOUP<em>DE DENTS.</em></h1>
+  <p>
+    Les mâchoires s'ouvrent.<br>
+    Les liens apparaissent entre les crocs.<br>
+    Un clic — la gueule se referme.<br>
+    CLAC.
+  </p>
+</main>
+
+<script>
+  /* ─── Paramètres ───────────────────────────────── */
+  const GUM_H  = parseInt(getComputedStyle(document.documentElement)
+                   .getPropertyValue('--jaw-h')) || 110;
+  const TEETH_H = GUM_H * 0.65 | 0;  // zone dents ≈ 65% de la hauteur totale de la mâchoire
+  const JAW_BODY = GUM_H - TEETH_H;   // hauteur du gencive solide
+
+  /* ─── Couleurs ─────────────────────────────────── */
+  const COL_GUM    = '#381218';
+  const COL_GUM2   = '#4a1a20';
+  const COL_BONE   = '#cec098';
+  const COL_STAIN1 = '#a89068';
+  const COL_STAIN2 = '#b8a880';
+  const COL_BLOOD  = '#6b1e1e';
+  const COL_SALIVA = 'rgba(200,230,240,0.55)';
+
+  /* ─── Génération des dents ─────────────────────── */
+  function buildTeeth(svgEl, isTop) {
+    const NS  = 'http://www.w3.org/2000/svg';
+    const W   = window.innerWidth;
+    const SVG_H = GUM_H;
+
+    svgEl.setAttribute('viewBox', `0 0 ${W} ${SVG_H}`);
+    svgEl.setAttribute('preserveAspectRatio', 'none');
+    svgEl.innerHTML = '';
+
+    /* fond de gencive */
+    const gumBg = document.createElementNS(NS, 'rect');
+    gumBg.setAttribute('x', 0); gumBg.setAttribute('y', 0);
+    gumBg.setAttribute('width', W); gumBg.setAttribute('height', SVG_H);
+    gumBg.setAttribute('fill', COL_GUM);
+    svgEl.appendChild(gumBg);
+
+    /* gradient gencive + sang */
+    const defs = document.createElementNS(NS, 'defs');
+    const grad = document.createElementNS(NS, 'linearGradient');
+    grad.setAttribute('id', isTop ? 'gg-top' : 'gg-bot');
+    grad.setAttribute('x1', '0'); grad.setAttribute('y1', isTop ? '0' : '1');
+    grad.setAttribute('x2', '0'); grad.setAttribute('y2', isTop ? '1' : '0');
+    const s1 = document.createElementNS(NS, 'stop');
+    s1.setAttribute('offset', '0%'); s1.setAttribute('stop-color', COL_BLOOD); s1.setAttribute('stop-opacity', '0.7');
+    const s2 = document.createElementNS(NS, 'stop');
+    s2.setAttribute('offset', '100%'); s2.setAttribute('stop-color', COL_GUM2); s2.setAttribute('stop-opacity', '0');
+    grad.appendChild(s1); grad.appendChild(s2);
+    defs.appendChild(grad);
+    svgEl.appendChild(defs);
+
+    /* overlay sang */
+    const bloodOver = document.createElementNS(NS, 'rect');
+    bloodOver.setAttribute('x', 0); bloodOver.setAttribute('y', 0);
+    bloodOver.setAttribute('width', W); bloodOver.setAttribute('height', SVG_H);
+    bloodOver.setAttribute('fill', `url(#${isTop ? 'gg-top' : 'gg-bot'})`);
+    svgEl.appendChild(bloodOver);
+
+    /* ─── Positions des dents ──────────────────────── */
+    const teeth = [];
+    let x = -8;
+    while (x < W + 15) {
+      const rand = Math.random();
+      let w, h;
+      /* mix : grande canine / moyenne / petite */
+      if (rand < 0.08) {
+        w = 32 + Math.random() * 22;  // grande : 32–54px
+        h = TEETH_H * (0.78 + Math.random() * 0.22);
+      } else if (rand < 0.30) {
+        w = 20 + Math.random() * 14;  // moyenne : 20–34px
+        h = TEETH_H * (0.48 + Math.random() * 0.32);
+      } else {
+        w = 10 + Math.random() * 12;  // petite : 10–22px
+        h = TEETH_H * (0.22 + Math.random() * 0.28);
+      }
+      /* tip légèrement asymétrique */
+      const tipOffset = (Math.random() - 0.5) * w * 0.35;
+      const tipX = x + w / 2 + tipOffset;
+
+      /* couleur : variation ivoire + quelques taches */
+      const stainRoll = Math.random();
+      const col = stainRoll < 0.15 ? COL_STAIN1 :
+                  stainRoll < 0.35 ? COL_STAIN2 : COL_BONE;
+
+      teeth.push({ x, w, h, tipX, col });
+      x += w + 1 + Math.random() * 3;
+    }
+
+    /* ─── Chemin des dents ─────────────────────────── */
+    /*
+      Mâchoire supérieure  → dents pointent vers le BAS (y augmente)
+        gum line = y = JAW_BODY
+        tip y   = JAW_BODY + h
+      Mâchoire inférieure → dents pointent vers le HAUT (y diminue)
+        gum line = y = SVG_H - JAW_BODY
+        tip y   = SVG_H - JAW_BODY - h
+    */
+    const gumLine = isTop
+      ? JAW_BODY                    // haut : gum en bas du bloc gencive
+      : SVG_H - JAW_BODY;          // bas  : gum en haut du bloc gencive
+
+    /* on dessine chaque dent individuellement pour pouvoir colorer */
+    teeth.forEach(t => {
+      if (!isTop) {
+        const tipY  = gumLine - t.h;
+        const baseL = t.x;
+        const baseR = t.x + t.w;
+        const d = `M ${baseL} ${gumLine} L ${t.tipX} ${tipY} L ${baseR} ${gumLine} Z`;
+        const path = document.createElementNS(NS, 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('fill', t.col);
+        svgEl.appendChild(path);
+      } else {
+        const tipY  = gumLine + t.h;
+        const baseL = t.x;
+        const baseR = t.x + t.w;
+        const d = `M ${baseL} ${gumLine} L ${t.tipX} ${tipY} L ${baseR} ${gumLine} Z`;
+        const path = document.createElementNS(NS, 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('fill', t.col);
+        svgEl.appendChild(path);
+      }
+    });
+
+    /* ─── Bloc gencive solide ─────────────────────────── */
+    const gumBlock = document.createElementNS(NS, 'rect');
+    if (isTop) {
+      gumBlock.setAttribute('x', 0);
+      gumBlock.setAttribute('y', 0);
+      gumBlock.setAttribute('width', W);
+      gumBlock.setAttribute('height', JAW_BODY);
+      gumBlock.setAttribute('fill', COL_GUM);
+    } else {
+      gumBlock.setAttribute('x', 0);
+      gumBlock.setAttribute('y', SVG_H - JAW_BODY);
+      gumBlock.setAttribute('width', W);
+      gumBlock.setAttribute('height', JAW_BODY);
+      gumBlock.setAttribute('fill', COL_GUM);
+    }
+    svgEl.appendChild(gumBlock);
+
+    /* ─── Salive sur quelques dents ──────────────────── */
+    const salivaCount = Math.floor(teeth.length * 0.07);
+    const salivaIdx = teeth
+      .map((_, i) => i)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, salivaCount);
+
+    salivaIdx.forEach(i => {
+      const t = teeth[i];
+      const len = 8 + Math.random() * 14;
+      const sx = t.tipX + (Math.random() - 0.5) * 4;
+      let sy1, sy2;
+      if (isTop) {
+        sy1 = gumLine + t.h - 4;
+        sy2 = sy1 + len;
+      } else {
+        sy1 = gumLine - t.h + 4;
+        sy2 = sy1 - len;
+      }
+      const drip = document.createElementNS(NS, 'line');
+      drip.setAttribute('x1', sx); drip.setAttribute('y1', sy1);
+      drip.setAttribute('x2', sx); drip.setAttribute('y2', sy2);
+      drip.setAttribute('stroke', COL_SALIVA);
+      drip.setAttribute('stroke-width', 1 + Math.random() * 1.5);
+      drip.setAttribute('stroke-linecap', 'round');
+      drip.classList.add('saliva-drop');
+      drip.style.animationDelay = `${Math.random() * 3}s`;
+      svgEl.appendChild(drip);
+    });
+
+    /* ─── Veinules gencives ──────────────────────────── */
+    for (let v = 0; v < 8; v++) {
+      const vx = Math.random() * W;
+      const vy = isTop ? Math.random() * JAW_BODY * 0.7 : SVG_H - Math.random() * JAW_BODY * 0.7;
+      const vw = 20 + Math.random() * 60;
+      const vein = document.createElementNS(NS, 'path');
+      const d = `M ${vx} ${vy} Q ${vx + vw/2} ${vy + (Math.random()-0.5)*8} ${vx + vw} ${vy}`;
+      vein.setAttribute('d', d);
+      vein.setAttribute('fill', 'none');
+      vein.setAttribute('stroke', `hsl(350,50%,${20+Math.random()*15}%)`);
+      vein.setAttribute('stroke-width', 0.5 + Math.random());
+      vein.setAttribute('stroke-opacity', 0.5);
+      svgEl.appendChild(vein);
+    }
+  }
+
+  /* ─── Init ─────────────────────────────────────── */
+  buildTeeth(document.getElementById('svg-top'), true);
+  buildTeeth(document.getElementById('svg-bottom'), false);
+
+  /* ─── Resize ───────────────────────────────────── */
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      buildTeeth(document.getElementById('svg-top'), true);
+      buildTeeth(document.getElementById('svg-bottom'), false);
+    }, 150);
+  });
+
+  /* ─── Shake ────────────────────────────────────── */
+  function shake(intensity = 6) {
+    const i = intensity;
+    document.body.animate([
+      { transform: 'translate(0,0)' },
+      { transform: `translate(${-i}px,${i*0.5}px)` },
+      { transform: `translate(${i*1.2}px,${-i*0.8}px)` },
+      { transform: `translate(${-i*0.7}px,${i}px)` },
+      { transform: `translate(${i*0.5}px,${-i*0.4}px)` },
+      { transform: `translate(${-i*0.3}px,${i*0.2}px)` },
+      { transform: 'translate(0,0)' },
+    ], { duration: 300, easing: 'ease-out' });
+  }
+
+  /* ─── Particules de morsure ────────────────────── */
+  function spawnBiteParticles() {
+    const mouthEl = document.getElementById('mouth-wrap');
+    const rect = mouthEl.getBoundingClientRect();
+    const cx = window.innerWidth / 2;
+    const cy = rect.top + rect.height / 2;
+
+    for (let i = 0; i < 40; i++) {
+      const p = document.createElement('div');
+      p.className = 'dust';
+      const size = 2 + Math.random() * 6;
+      p.style.cssText = `
+        width:${size}px;height:${size}px;
+        left:${cx + (Math.random()-0.5)*300}px;
+        top:${cy}px;
+        background:hsl(${40+Math.random()*15},${15+Math.random()*20}%,${50+Math.random()*25}%);
+      `;
+      document.body.appendChild(p);
+
+      const dx = (Math.random() - 0.5) * 250;
+      const dy = (Math.random() - 0.5) * 80 + 20;
+      p.animate([
+        { transform: 'translate(0,0) scale(1)', opacity: 0.85 },
+        { transform: `translate(${dx}px,${dy}px) scale(0.1)`, opacity: 0 }
+      ], { duration: 500 + Math.random() * 500, easing: 'ease-out', fill: 'forwards' })
+       .finished.then(() => p.remove());
+    }
+  }
+
+  /* ─── Open / Close ─────────────────────────────── */
+  const wrap   = document.getElementById('mouth-wrap');
+  const btn    = document.getElementById('bite-btn');
+  const label  = document.getElementById('bite-label');
+  const status = document.getElementById('mouth-status');
+  const flash  = document.getElementById('bite-flash');
+
+  let isOpen = true;
+
+  btn.addEventListener('click', () => {
+    if (isOpen) {
+      /* FERMER — SNAP */
+      wrap.classList.add('is-closed');
+      btn.setAttribute('aria-expanded', 'false');
+      label.textContent = 'OUVRIR';
+      status.textContent = 'GUEULE FERMÉE';
+      status.classList.remove('warn');
+
+      /* impact sonore visuel */
+      setTimeout(() => {
+        shake(8);
+        spawnBiteParticles();
+        flash.classList.add('active');
+        setTimeout(() => flash.classList.remove('active'), 260);
+      }, 120); /* légèrement avant la fin pour synchroniser avec le clac */
+
+    } else {
+      /* OUVRIR — springy */
+      wrap.classList.remove('is-closed');
+      btn.setAttribute('aria-expanded', 'true');
+      label.textContent = 'REFERMER';
+      status.textContent = 'GUEULE OUVERTE';
+      status.classList.add('warn');
+    }
+    isOpen = !isOpen;
+  });
+
+  /* ─── Idle : légère respiration ────────────────── */
+  wrap.animate([
+    { transform: 'scaleY(1)' },
+    { transform: 'scaleY(1.008)' },
+    { transform: 'scaleY(1)' },
+  ], {
+    duration: 4000,
+    easing: 'ease-in-out',
+    iterations: Infinity,
+    delay: 800,
+  });
+</script>
+</body>
+</html>
