@@ -11,19 +11,19 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bone:      hsl(48, 22%, 80%);
-      --bone-dark: hsl(45, 18%, 62%);
-      --bone-stain:hsl(45, 12%, 52%);
-      --gum:       hsl(352, 42%, 18%);
-      --gum-light: hsl(352, 35%, 26%);
-      --throat:    hsl(350, 28%, 6%);
-      --throat2:   hsl(10, 20%, 10%);
-      --blood:     hsl(0, 55%, 30%);
-      --nav-bg:    hsl(20, 10%, 7%);
-      --text:      hsl(38, 18%, 78%);
-      --muted:     hsl(30, 8%, 42%);
-      --rust:      hsl(18, 68%, 44%);
-      --saliva:    hsl(195, 30%, 80%);
+      --bone:      hsl(80, 20%, 78%);
+      --bone-dark: hsl(85, 16%, 58%);
+      --bone-stain:hsl(90, 12%, 46%);
+      --gum:       hsl(130, 38%, 12%);
+      --gum-light: hsl(128, 32%, 20%);
+      --throat:    hsl(135, 30%, 5%);
+      --throat2:   hsl(140, 22%, 8%);
+      --blood:     hsl(120, 50%, 18%);
+      --nav-bg:    hsl(135, 12%, 7%);
+      --text:      hsl(100, 16%, 78%);
+      --muted:     hsl(110, 8%, 42%);
+      --rust:      hsl(100, 55%, 38%);
+      --saliva:    hsl(160, 40%, 78%);
       --jaw-h:     110px;
       --mouth-open: 300px;
       --mouth-closed: 185px;
@@ -39,7 +39,7 @@
     html { scroll-behavior: smooth; }
     body {
       font-family: 'Oswald', system-ui, sans-serif;
-      background: hsl(20, 10%, 5%);
+      background: hsl(135, 12%, 5%);
       color: var(--text);
       min-height: 250vh;
       overflow-x: hidden;
@@ -248,7 +248,7 @@
     /* ─── Bite flash ─────────────────────────────────── */
     .bite-flash {
       position: fixed; inset: 0; z-index: 9200;
-      background: hsl(0, 60%, 15%);
+      background: hsl(130, 55%, 10%);
       pointer-events: none; opacity: 0;
     }
     .bite-flash.active {
@@ -338,13 +338,13 @@
   const JAW_BODY = GUM_H - TEETH_H;   // hauteur du gencive solide
 
   /* ─── Couleurs ─────────────────────────────────── */
-  const COL_GUM    = '#381218';
-  const COL_GUM2   = '#4a1a20';
-  const COL_BONE   = '#cec098';
-  const COL_STAIN1 = '#a89068';
-  const COL_STAIN2 = '#b8a880';
-  const COL_BLOOD  = '#6b1e1e';
-  const COL_SALIVA = 'rgba(200,230,240,0.55)';
+  const COL_GUM    = '#0e2414';
+  const COL_GUM2   = '#163320';
+  const COL_BONE   = '#b8c898';
+  const COL_STAIN1 = '#7a9858';
+  const COL_STAIN2 = '#9ab878';
+  const COL_BLOOD  = '#1a4a20';
+  const COL_SALIVA = 'rgba(160,240,180,0.55)';
 
   /* ─── Génération des dents ─────────────────────── */
   function buildTeeth(svgEl, isTop) {
@@ -506,7 +506,7 @@
       const d = `M ${vx} ${vy} Q ${vx + vw/2} ${vy + (Math.random()-0.5)*8} ${vx + vw} ${vy}`;
       vein.setAttribute('d', d);
       vein.setAttribute('fill', 'none');
-      vein.setAttribute('stroke', `hsl(350,50%,${20+Math.random()*15}%)`);
+      vein.setAttribute('stroke', `hsl(130,50%,${14+Math.random()*12}%)`);
       vein.setAttribute('stroke-width', 0.5 + Math.random());
       vein.setAttribute('stroke-opacity', 0.5);
       svgEl.appendChild(vein);
